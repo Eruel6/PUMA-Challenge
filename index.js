@@ -4,12 +4,11 @@ class Usuario {
         this.nome = nome;
         this.imagemPerfil = imagemPerfil;
         this.urlPerfil = urlPerfil;
+        this.Favorito = false;
     }
 }
 
 const usuarios = {};
-
-
 
 function printTodosUsuarios() {
     for (let perfilProcurado in usuarios) {
@@ -19,12 +18,11 @@ function printTodosUsuarios() {
             console.log(`Nome: ${usuario.nome}`);
             console.log(`Imagem do perfil: ${usuario.imagemPerfil}`);
             console.log(`URL do perfil: ${usuario.urlPerfil}`);
+            console.log(`Estrela: ${usuario.Favorito}`);
             console.log('------------------------');
         });
     }
 }
-
-
 
 const readline = require('readline');
 
@@ -35,8 +33,12 @@ const rl = readline.createInterface({
 
 function adicionaUsuario(perfilProcurado) {
 
-    if (usuarios.length >= 5){
-        throw new error ('Máximo de usuários alcançado!')
+    if (usuarios[perfilProcurado]) {
+        throw new Error('Este usuário já está cadastrado!');
+    }
+
+    if (Object.keys(usuarios).length >= 5) {
+        throw new Error('Máximo de usuários alcançado!');
     }
 
     if (usuarios[perfilProcurado]) {
@@ -62,6 +64,31 @@ function adicionaUsuario(perfilProcurado) {
     }
 }
 
+function deletaUsuario(perfilProcurado) {
+    if (usuarios[perfilProcurado]) {
+        delete usuarios[perfilProcurado];
+        console.log(`Usuário ${perfilProcurado} removido com sucesso.`);
+    } else {
+        console.log(`Usuário ${perfilProcurado} não encontrado.`);
+    }
+}
+
+function alternaEstrela(perfilProcurado) {
+    if (usuarios[perfilProcurado]) {
+        usuarios[perfilProcurado].forEach(usuario => {
+            if (usuario.Favorito) {
+                usuario.Favorito = false;
+            }
+            else {
+                usuario.Favorito = true;
+            }
+            console.log(`Estrela de ${usuario.nomeUsuario} alterada para: ${usuario.Favorito}`);
+        });
+    } else {
+        console.log(`Usuário ${perfilProcurado} não encontrado.`);
+    }
+}
+
 function iniciar() {
     rl.question('Digite 1 para adicionar um usuário, 2 para imprimir todos os usuários ou 0 para sair: ', (resposta) => {
         if (resposta === '1') {
@@ -72,7 +99,17 @@ function iniciar() {
         } else if (resposta === '2') {
             printTodosUsuarios();
             iniciar(); 
-        } else if (resposta === '0') {
+        } else if (resposta === '3') {
+            rl.question('Digite o nome de usuário a ser removido: ', (perfilProcurado) => {
+                deletaUsuario(perfilProcurado);
+                iniciar();
+            });
+        } else if (resposta == '4'){
+            rl.question('Digite o nome de usuário a receber a estrela: ', (perfilProcurado) => {
+            alternaEstrela(perfilProcurado);
+            iniciar();
+            });
+        }else if (resposta === '0') {
             rl.close(); 
         } else {
             console.log('Opção inválida. Por favor, digite 1, 2 ou 0.');
