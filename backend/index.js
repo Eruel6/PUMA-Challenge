@@ -1,3 +1,5 @@
+const express = require('express');
+
 class Usuario {
     constructor(nomeUsuario, nome, imagemPerfil, urlPerfil) {
         this.nomeUsuario = nomeUsuario;
@@ -89,6 +91,52 @@ function alternaEstrela(perfilProcurado) {
     }
 }
 
+const app = express();
+const PORT = 3000;
+
+app.use(express.json());
+
+app.post('/usuarios', async (req, res) => {
+    const { perfilProcurado } = req.body;
+    try {
+        const resultados = await adicionaUsuario(perfilProcurado);
+        res.json(resultados);
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
+});
+
+app.get('/usuarios', (req, res) => {
+    printTodosUsuarios();
+    res.json(usuarios);
+});
+
+app.delete('/usuarios/:perfilProcurado', (req, res) => {
+    const { perfilProcurado } = req.params;
+    deletaUsuario(perfilProcurado);
+    res.json({ message: `Usuário ${perfilProcurado} removido com sucesso.` });
+});
+
+app.put('/usuarios/:perfilProcurado/estrela', (req, res) => {
+    const { perfilProcurado } = req.params;
+    alternaEstrela(perfilProcurado);
+    res.json({ message: `Estrela de ${perfilProcurado} alterada com sucesso.` });
+});
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
+});
+
+module.exports = {
+    Usuario,
+    usuarios,
+    printTodosUsuarios,
+    adicionaUsuario,
+    deletaUsuario,
+    alternaEstrela
+};
+
+/*
 function iniciar() {
     rl.question('Digite 1 para adicionar um usuário, 2 para imprimir todos os usuários ou 0 para sair: ', (resposta) => {
         if (resposta === '1') {
@@ -118,4 +166,4 @@ function iniciar() {
     });
 }
 
-iniciar();
+iniciar();*/
